@@ -148,6 +148,12 @@ export default function Gallery() {
           Anterior
         </button>
         <button
+          onClick={() => (window.location.href = "/upload")}
+          className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-full hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-300"
+        >
+          Subir Imágenes
+        </button>
+        <button
           onClick={handleNext}
           disabled={!nextToken}
           className="px-6 py-3 bg-gradient-to-r from-teal-400 to-blue-500 text-white rounded-full hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"

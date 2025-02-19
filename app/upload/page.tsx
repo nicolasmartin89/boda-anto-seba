@@ -79,8 +79,8 @@ export default function Upload() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-secondary to-background">
-      <Card className="w-full max-w-md">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-secondary to-neutral">
+      <Card className="w-full max-w-md bg-white shadow-lg rounded-lg">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-primary">
             Subir Imágenes
@@ -105,7 +105,7 @@ export default function Upload() {
           <Button
             onClick={handleUpload}
             disabled={!files || isUploading}
-            className="w-full px-6 py-3 bg-blue-500 text-white text-lg rounded-lg hover:bg-blue-600 transition"
+            className="w-full px-6 py-3 bg-primary text-white text-lg rounded-lg hover:bg-primary-dark transition"
           >
             {isUploading ? "Subiendo..." : "Subir Imágenes"}
           </Button>

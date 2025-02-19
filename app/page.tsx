@@ -2,46 +2,44 @@
 
 import { useUser, SignInButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
+import { Card, CardContent, CardHeader } from "../components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-  const { user, isSignedIn } = useUser(); // Hook para obtener información del usuario
+  const { user, isSignedIn } = useUser();
   const router = useRouter();
 
   const handleGalleryClick = () => router.push("/gallery");
   const handleUploadClick = () => router.push("/upload");
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-gradient-to-b from-secondary to-background">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold text-center text-primary">
-            Bienvenidos a nuestra Galería de Fotos
-          </CardTitle>
+    <section className="flex flex-col items-center justify-center bg-gradient-to-b from-neutral-light to-neutral px-4 pt-10 pb-6">
+      {/* Card */}
+      <Card className="w-full max-w-md shadow-lg rounded-lg mb-4">
+        <CardHeader className="text-center">
+          <h1 className="text-3xl font-serif font-bold text-primary mb-1">
+            Galería de Recuerdos
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Queremos que compartas con nosotros los momentos de esta noche, que
+            va a ser inolvidable.
+          </p>
         </CardHeader>
-        <CardContent className="flex flex-col items-center">
+        <CardContent className="flex flex-col items-center gap-6 p-6">
           {isSignedIn ? (
             <>
-              <p className="mb-6 text-center text-muted-foreground">
-                Bienvenido a nuestra galería de fotos, {user?.firstName}! <br />
-                Gracias por ser parte de este día tan especial.
+              <p className="text-base text-muted-foreground text-center">
+                ¡Hola, {user?.firstName}! ¿Listo para explorar o contribuir?
               </p>
               <div className="flex flex-col gap-4 w-full">
                 <Button
-                  className="w-full bg-primary text-secondary hover:bg-primary/90"
+                  className="w-full bg-primary text-neutral-light hover:bg-primary/90 transition"
                   onClick={handleGalleryClick}
                 >
                   Ver Galería
                 </Button>
                 <Button
-                  className="w-full bg-primary text-secondary hover:bg-primary/90"
+                  className="w-full bg-secondary text-neutral-light hover:bg-secondary/90 transition"
                   onClick={handleUploadClick}
                 >
                   Subir Fotos
@@ -50,12 +48,11 @@ export default function Home() {
             </>
           ) : (
             <>
-              <p className="mb-6 text-center text-muted-foreground">
-                Inicia sesión para subir y ver las fotos de nuestra boda.
-                ¡Gracias por ser parte de nuestro día especial!
+              <p className="text-base text-muted-foreground text-center">
+                Inicia sesión para ser parte de nuestra galería.
               </p>
               <SignInButton mode="modal">
-                <Button className="bg-primary text-secondary hover:bg-primary/90">
+                <Button className="w-full bg-primary text-neutral-light hover:bg-primary/90 transition">
                   Iniciar Sesión
                 </Button>
               </SignInButton>
@@ -63,6 +60,6 @@ export default function Home() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 }
