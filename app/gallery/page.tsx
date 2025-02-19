@@ -86,7 +86,7 @@ export default function Gallery() {
           Cargando imágenes...
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {images.map((image) => (
             <div
               key={image.key}
@@ -105,7 +105,7 @@ export default function Gallery() {
                   setImageToDelete(image.key);
                   setShowModal(true);
                 }}
-                className="absolute top-2 right-2 bg-black text-white p-2 rounded-full hover:bg-gray-700 focus:outline-none"
+                className="absolute top-2 right-2 bg-black/80 text-white p-1.5 rounded-full hover:bg-black focus:outline-none"
               >
                 🗑️
               </button>
@@ -117,7 +117,7 @@ export default function Gallery() {
       {/* Modal de confirmación */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div className="bg-white p-6 rounded-lg w-11/12 max-w-md">
             <h2 className="text-xl mb-4">
               ¿Estás seguro de que deseas eliminar esta imagen?
             </h2>
@@ -139,24 +139,25 @@ export default function Gallery() {
         </div>
       )}
 
-      <div className="flex justify-between items-center mt-8">
+      {/* Botones de navegación y subida */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-8 gap-4">
         <button
           onClick={handlePrevious}
           disabled={prevTokens.length === 0}
-          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-full hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-blue-500 to-teal-400 text-white rounded-lg hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
           Anterior
         </button>
         <button
           onClick={() => (window.location.href = "/upload")}
-          className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-full hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-300"
+          className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-600 transition-all duration-300"
         >
           Subir Imágenes
         </button>
         <button
           onClick={handleNext}
           disabled={!nextToken}
-          className="px-6 py-3 bg-gradient-to-r from-teal-400 to-blue-500 text-white rounded-full hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+          className="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-teal-400 to-blue-500 text-white rounded-lg hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
         >
           Siguiente
         </button>

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global Styles */
 :root {
   --font-primary: 'Inter', sans-serif;
   --font-secondary: 'Playfair Display', serif;
@@ -10,41 +9,66 @@
   --color-secondary: #A3B18A;
   --color-accent: #E8AEB7;
   --color-neutral: #F5F5F5;
+  --color-black: #000000;
 }
 
-/* Asegura que el body y el contenedor principal ocupen toda la altura */
 body,
 html {
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+  background-color: var(--color-neutral);
+  color: var(--color-primary);
 }
 
 main {
   flex-grow: 1;
-  /* Esto asegura que el contenido principal ocupe todo el espacio disponible */
+  padding-bottom: 4rem;
+  /* Espacio para el footer */
 }
 
-/* Estilo para el footer */
 footer {
-  position: relative;
-  bottom: 0;
   width: 100%;
-}
-
-body {
-  @apply font-sans bg-neutral text-primary-dark;
+  background-color: var(--color-black);
+  color: var(--color-black);
+  padding: 1rem 0;
+  text-align: center;
 }
 
 a {
-  @apply text-primary hover:text-accent transition-all duration-200;
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-accent);
 }
 
 button {
-  @apply bg-primary text-neutral-light rounded-md px-4 py-2 hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-secondary-light;
+  background-color: var(--color-primary);
+  color: var(--color-neutral);
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-/* Ocultar el componente de Clerk */
+button:hover {
+  background-color: var(--color-secondary);
+  transform: scale(1.05);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
 #clerk-components {
   display: none;
 }

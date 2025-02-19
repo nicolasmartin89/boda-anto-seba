@@ -12,19 +12,16 @@ export function Navbar() {
           {/* Logo y título */}
           <div className="flex items-center space-x-3">
             <Link href="/" passHref>
-              {" "}
               <Image
                 src="/wedding-rings.svg"
                 alt="Logo de boda"
                 width={45}
                 height={45}
-                className="text-primary cursor-pointer" // Agregar cursor-pointer para indicar interactividad
+                className="text-primary cursor-pointer hover:opacity-80 transition-opacity"
               />
             </Link>
             <Link href="/" passHref>
-              {" "}
-              {/* Envolviendo el título en un enlace */}
-              <h1 className="text-2xl font-serif font-bold text-neutral-light cursor-pointer">
+              <h1 className="text-2xl font-serif font-bold text-neutral-light cursor-pointer hover:text-secondary transition-colors">
                 Anto y Seba
               </h1>
             </Link>
@@ -33,11 +30,11 @@ export function Navbar() {
           {/* Botones de autenticación */}
           <div className="flex items-center space-x-4">
             <SignedIn>
-              <UserButton />
+              <UserButton afterSignOutUrl="/" />
             </SignedIn>
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="text-sm font-medium text-neutral-light bg-primary hover:bg-primary/90 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-primary transition">
+                <button className="text-sm font-medium text-neutral-light bg-primary hover:bg-primary/90 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors">
                   Iniciar Sesión
                 </button>
               </SignInButton>
