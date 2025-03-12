@@ -3,6 +3,8 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 const isProtectedRoute = createRouteMatcher(['/dashboard', '/gallery', '/upload']);
 
 export default clerkMiddleware(async (auth, req) => {
+    const location = process.env.NEXTAUTH_URL;
+
     if (isProtectedRoute(req)) {
         try {
             await auth.protect();
@@ -10,7 +12,7 @@ export default clerkMiddleware(async (auth, req) => {
             const res = new Response(null, {
                 status: 307,
                 headers: {
-                    Location: 'http://localhost:3000/',  // ACORDATE Nico de cambiar esto en deploy
+                    Location: location!,  // ACORDATE Nico de cambiar esto en deploy
                 },
             });
             return res;
