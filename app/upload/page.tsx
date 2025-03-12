@@ -11,9 +11,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { UploadCloud, Trash2 } from "lucide-react"; // Importar íconos
+import { UploadCloud, Trash2 } from "lucide-react";
 
 export default function Upload() {
   const [files, setFiles] = useState<File[]>([]);
