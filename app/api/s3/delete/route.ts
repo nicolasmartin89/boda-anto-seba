@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { S3Client, DeleteObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { getAuth } from "@clerk/nextjs/server";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import type { NextRequest } from "next/server";
 
 // Configura el cliente de AWS S3
 const s3 = new S3Client({
@@ -10,40 +13,84 @@ const s3 = new S3Client({
     },
 });
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
     try {
-        const url = new URL(req.url);
-        const key = url.searchParams.get("key");
-
-        if (!key) {
-            return NextResponse.json({ error: "Falta la clave de la imagen" }, { status: 400 });
+        // Verificar autenticación
+        const { userId } = getAuth(req); // Ahora req es de tipo NextRequest
+        if (!userId) {
+            return NextResponse.json(
+                { error: "No autorizado. Por favor, inicia sesión." },
+                { status: 401 }
+            );
         }
 
-        console.log("Eliminando imagen con la clave:", key); // A ver que sale aca...
+        // Obtener información del usuario
+        const user = await clerkClient.users.getUser(userId);
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+
+        // Verificar si el usuario tiene permisos
+        if (userEmail !== "nicolasmartin89@gmail.com") {
+            return NextResponse.json(
+                { error: "No tienes permisos para realizar esta acción." },
+                { status: 403 }
+            );
+        }
+
+        // Obtener la clave de la imagen
+        const key = req.nextUrl.searchParams.get("key"); // Usa req.nextUrl para obtener los parámetros
+
+        if (!key) {
+            return NextResponse.json(
+                { error: "Falta la clave de la imagen en la solicitud." },
+                { status: 400 }
+            );
+        }
+
+        console.log(`[DELETE] Intento de eliminar imagen: ${key}`);
+
         // Verificar si la imagen existe en S3
         const headParams = {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: key,
         };
-        const headCommand = new HeadObjectCommand(headParams);
-        await s3.send(headCommand); // Si no existe, lanzará un error
 
-        console.log("Imagen encontrada, procediendo con la eliminación");
+        try {
+            await s3.send(new HeadObjectCommand(headParams));
+            console.log(`[DELETE] Imagen encontrada: ${key}`);
+        } catch (error) {
+            console.error(`[DELETE] Error al buscar imagen: ${key}`, error);
+            return NextResponse.json(
+                { error: "La imagen no fue encontrada en el servidor." },
+                { status: 404 }
+            );
+        }
 
-
-        const params = {
+        // Eliminar la imagen
+        const deleteParams = {
             Bucket: process.env.AWS_BUCKET_NAME!,
             Key: key,
         };
 
-        const command = new DeleteObjectCommand(params);
-        await s3.send(command);
+        await s3.send(new DeleteObjectCommand(deleteParams));
+        console.log(`[DELETE] Imagen eliminada exitosamente: ${key}`);
 
-        return NextResponse.json({ message: "Imagen eliminada exitosamente" });
-    } catch (error) {
-        console.error("Error al eliminar la imagen:", error);
         return NextResponse.json(
-            { error: "Hubo un problema al eliminar la imagen." },
+            { message: "Imagen eliminada exitosamente." },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("[DELETE] Error en el servidor:", error);
+
+        // Manejo de errores específicos
+        if ((error as Error).name === "NotFound") {
+            return NextResponse.json(
+                { error: "La imagen no fue encontrada." },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: "Hubo un problema en el servidor al eliminar la imagen." },
             { status: 500 }
         );
     }
