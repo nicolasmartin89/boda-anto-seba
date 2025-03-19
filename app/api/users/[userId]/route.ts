@@ -4,7 +4,7 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function GET(
     req: NextRequest,
-    context: { params: Promise<{ userId: string }> }
+    context: { params: Promise<{ userId: string }> } // Se modifica el promise para que funcione el build.
 ) {
     try {
         // Obtener el userId del usuario autenticado
