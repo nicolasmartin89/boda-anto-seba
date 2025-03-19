@@ -8,7 +8,7 @@ export async function GET(
 ) {
     try {
         // Obtener el userId del usuario autenticado
-        const { userId: authUserId } = auth();
+        const { userId: authUserId } = await auth();
 
         if (!authUserId) {
             return NextResponse.json(
