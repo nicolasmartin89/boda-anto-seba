@@ -1,10 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 
 export async function GET(
-    req: Request,
-    { params }: { params: { userId: string } }
+    req: NextRequest,
+    context: { params: Promise<{ userId: string }> }
 ) {
     try {
         // Obtener el userId del usuario autenticado
@@ -17,8 +17,9 @@ export async function GET(
             );
         }
 
-        // Verificar si el userId de la ruta está presente
-        const { userId } = params;
+        // Resolver la promesa de params
+        const { userId } = await context.params; // Corrección aquí
+
         if (!userId) {
             return NextResponse.json(
                 { error: "userId es requerido." },
