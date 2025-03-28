@@ -32,6 +32,9 @@ export function Navbar() {
             <SignedIn>
               <UserButton afterSignOutUrl="/" />
             </SignedIn>
+
+            {/* Botón de inicio de sesión
+
             <SignedOut>
               <SignInButton mode="modal">
                 <button className="text-sm font-medium text-neutral-light bg-primary hover:bg-primary/90 px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors">
@@ -39,6 +42,8 @@ export function Navbar() {
                 </button>
               </SignInButton>
             </SignedOut>
+
+             */}
           </div>
         </div>
       </div>
