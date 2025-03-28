@@ -15,8 +15,6 @@ export default function Gallery() {
     prevTokens: [] as string[],
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [imageToDelete, setImageToDelete] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const { userId } = useAuth();
 
@@ -68,20 +66,23 @@ export default function Gallery() {
   };
 
   // Eliminar imagen
-  const handleDeleteImage = async () => {
-    if (!imageToDelete || !isAdmin) return;
+  const handleDeleteImage = async (imageKey: string) => {
+    if (!isAdmin) return;
+
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta imagen?"
+    );
+    if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`/api/s3/delete?key=${imageToDelete}`, {
+      const response = await fetch(`/api/s3/delete?key=${imageKey}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
         setImages((prevImages) =>
-          prevImages.filter((image) => image.key !== imageToDelete)
+          prevImages.filter((image) => image.key !== imageKey)
         );
-        setShowModal(false);
-        alert("Imagen eliminada exitosamente");
       } else {
         alert("Hubo un error al eliminar la imagen");
       }
@@ -133,14 +134,12 @@ export default function Gallery() {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover rounded-xl"
                   quality={75}
+                  priority={false} // Usar priority solo si es necesario, para mejorar la carga
                 />
               </div>
               {isAdmin && (
                 <button
-                  onClick={() => {
-                    setImageToDelete(image.key);
-                    setShowModal(true);
-                  }}
+                  onClick={() => handleDeleteImage(image.key)}
                   className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none opacity-90 group-hover:opacity-100 transition-all duration-300 border-2 border-white shadow-lg"
                 >
                   🗑️
@@ -148,31 +147,6 @@ export default function Gallery() {
               )}
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Modal de confirmación */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="bg-white p-6 rounded-lg w-11/12 max-w-md border border-gray-200 shadow-2xl">
-            <h2 className="text-xl font-semibold mb-4 text-gray-800">
-              ¿Estás seguro de que deseas eliminar esta imagen?
-            </h2>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 focus:outline-none transition-all duration-200"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleDeleteImage}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none transition-all duration-200"
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
         </div>
       )}
 

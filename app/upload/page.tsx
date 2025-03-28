@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UploadCloud, Trash2 } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify"; // Importar ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Importar estilos
 
 export default function Upload() {
   const [files, setFiles] = useState<File[]>([]);
@@ -63,11 +65,13 @@ export default function Upload() {
         }
       }
 
-      alert("¡Imágenes subidas con éxito!");
+      // Mostrar toast de éxito
+      toast.success("¡Imágenes subidas con éxito!");
+
       router.push("/gallery");
     } catch (error) {
       console.error("Error al subir imágenes:", error);
-      alert("Hubo un error al subir las imágenes. Intenta nuevamente.");
+      toast.error("Hubo un error al subir las imágenes. Intenta nuevamente.");
     } finally {
       setIsUploading(false);
     }
@@ -85,6 +89,13 @@ export default function Upload() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 bg-neutral-50">
+      {/* ToastContainer para manejar los toasts */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+      />
+
       <Card className="w-full max-w-md bg-white shadow-xl rounded-lg border border-neutral-100">
         <CardHeader>
           <CardTitle className="text-3xl font-bold text-center text-primary-dark">
