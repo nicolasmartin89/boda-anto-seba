@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@clerk/nextjs";
 
 type ImageType = {
@@ -8,29 +8,45 @@ type ImageType = {
   url: string;
 };
 
+type PaginationState = {
+  nextToken: string | null;
+  prevTokens: string[];
+};
+
+const ADMIN_EMAILS = new Set([
+  "anto_puntin@hotmail.com",
+  "agopuntin@hotmail.com",
+  "elsebamartin3@gmail.com",
+  "noralibersier@gmail.com",
+  "nicolasmartin89@gmail.com",
+  "donadiovictor@gmail.com",
+  "wolffbaltazar@gmail.com",
+]);
+
 export default function Gallery() {
   const [images, setImages] = useState<ImageType[]>([]);
-  const [pagination, setPagination] = useState({
-    nextToken: null as string | null,
-    prevTokens: [] as string[],
+  const [pagination, setPagination] = useState<PaginationState>({
+    nextToken: null,
+    prevTokens: [],
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { userId } = useAuth();
 
   // Verificar si el usuario es admin
   useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!userId) return;
+    if (!userId) return;
 
+    const checkAdminStatus = async () => {
       try {
         const response = await fetch(`/api/users/${userId}`);
-        if (response.ok) {
-          const user = await response.json();
-          setIsAdmin(
-            user.emailAddresses[0]?.emailAddress === "nicolasmartin89@gmail.com"
-          );
-        }
+        if (!response.ok) return;
+
+        const user = await response.json();
+        const userEmail = user.emailAddresses?.[0]?.emailAddress ?? "";
+
+        setIsAdmin(userEmail && ADMIN_EMAILS.has(userEmail));
       } catch (error) {
         console.error("Error fetching user data:", error);
       }
@@ -41,7 +57,10 @@ export default function Gallery() {
 
   // Cargar imágenes
   const fetchImages = async (continuationToken: string | null = null) => {
+    if (isLoading) return;
     setIsLoading(true);
+    setError(null); // Resetear error en cada carga
+
     try {
       const url = `/api/s3/list${
         continuationToken ? `?continuationToken=${continuationToken}` : ""
@@ -59,11 +78,17 @@ export default function Gallery() {
           : prev.prevTokens,
       }));
     } catch (error) {
+      setError("No se pudieron cargar las imágenes.");
       console.error(error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Carga inicial (ejecutar solo una vez)
+  useEffect(() => {
+    fetchImages();
+  }, []); // <--- Dependencias vacías para evitar llamadas repetidas
 
   // Eliminar imagen
   const handleDeleteImage = async (imageKey: string) => {
@@ -79,16 +104,14 @@ export default function Gallery() {
         method: "DELETE",
       });
 
-      if (response.ok) {
-        setImages((prevImages) =>
-          prevImages.filter((image) => image.key !== imageKey)
-        );
-      } else {
-        alert("Hubo un error al eliminar la imagen");
-      }
+      if (!response.ok) throw new Error("Hubo un error al eliminar la imagen");
+
+      setImages((prevImages) =>
+        prevImages.filter((image) => image.key !== imageKey)
+      );
     } catch (error) {
+      setError("No se pudo eliminar la imagen.");
       console.error(error);
-      alert("Hubo un error al eliminar la imagen");
     }
   };
 
@@ -104,16 +127,14 @@ export default function Gallery() {
     fetchImages(lastToken);
   };
 
-  // Carga inicial
-  useEffect(() => {
-    fetchImages();
-  }, []);
-
   return (
     <div className="min-h-screen bg-white p-4">
       <h1 className="text-4xl font-bold text-center mb-6 text-gray-800">
         Galería de Fotos
       </h1>
+
+      {/* Mostrar errores si existen */}
+      {error && <p className="text-red-500 text-center">{error}</p>}
 
       {isLoading ? (
         <p className="text-center text-xl text-gray-600">
@@ -134,13 +155,13 @@ export default function Gallery() {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   className="object-cover rounded-xl"
                   quality={75}
-                  priority={false} // Usar priority solo si es necesario, para mejorar la carga
                 />
               </div>
               {isAdmin && (
                 <button
                   onClick={() => handleDeleteImage(image.key)}
                   className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 focus:outline-none opacity-90 group-hover:opacity-100 transition-all duration-300 border-2 border-white shadow-lg"
+                  aria-label="Eliminar imagen"
                 >
                   🗑️
                 </button>
